@@ -3,9 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO
+namespace CsMmdDataIO.Vmd.Data
 {
-    public class Class1
+    public interface IKeyFrame
     {
+        long FrameTime { get; set; }
     }
 }

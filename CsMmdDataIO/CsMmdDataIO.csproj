@@ -1,10 +1,10 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>1aef787f-b0ed-44b4-b091-6570888a91f7</ProjectGuid>
+    <ProjectGuid>{1AEF787F-B0ED-44B4-B091-6570888A91F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CsMmdDataIO</RootNamespace>
@@ -30,22 +30,44 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System"/>
-    
-    <Reference Include="System.Core"/>
-    <Reference Include="System.Xml.Linq"/>
-    <Reference Include="System.Data.DataSetExtensions"/>
-    
-    
-    <Reference Include="Microsoft.CSharp"/>
-    
-    <Reference Include="System.Data"/>
-    
-    <Reference Include="System.Xml"/>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="CloneUtil.cs" />
+    <Compile Include="ExporterBase.cs" />
+    <Compile Include="ParserBase.cs" />
+    <Compile Include="Vmd\Data\IKeyFrame.cs" />
+    <Compile Include="Vmd\Data\VmdPropertyFrameData.cs" />
+    <Compile Include="Vmd\VmdExporter.cs" />
+    <Compile Include="Vmd\Data\IVmdData.cs" />
+    <Compile Include="Vmd\Data\VmdHeaderData.cs" />
+    <Compile Include="Vmd\Data\VmdMorphFrameData.cs" />
+    <Compile Include="Vmd\Data\VmdMotionData.cs" />
+    <Compile Include="Vmd\Data\VmdMotionFrameData.cs" />
+    <Compile Include="Pmx\PmxParser.cs" />
+    <Compile Include="Pmx\PmxExporter.cs" />
+    <Compile Include="Pmx\Data\IPmxData.cs" />
+    <Compile Include="Pmx\Data\IPmxMorphTypeData.cs" />
+    <Compile Include="Pmx\Data\PmxBoneData.cs" />
+    <Compile Include="Pmx\Data\PmxHeaderData.cs" />
+    <Compile Include="Pmx\Data\PmxMaterialData.cs" />
+    <Compile Include="Pmx\Data\PmxModelData.cs" />
+    <Compile Include="Pmx\Data\PmxMorphData.cs" />
+    <Compile Include="Pmx\Data\PmxSlotData.cs" />
+    <Compile Include="Pmx\Data\PmxVertexData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\VecMath\VecMath.csproj">
+      <Project>{454be0aa-4fab-4df4-842a-da450652c5ec}</Project>
+      <Name>VecMath</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
- </Project>
+</Project>
