@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace CsMmdDataIO.Vmd
@@ -18,11 +18,11 @@ namespace CsMmdDataIO.Vmd
             Weigth = weight;
         }
 
-        public void Export(VmdExporter exporter)
+        public void Write(BinaryWriter writer)
         {
-            exporter.WriteTextWithFixedLength(Name, VmdExporter.MORPH_NAME_LENGTH);
-            exporter.Write(FrameTime);
-            exporter.Write(Weigth);
+            writer.WriteTextWithFixedLength(Name, VmdMotionData.MORPH_NAME_LENGTH);
+            writer.Write(FrameTime);
+            writer.Write(Weigth);
         }
     }
 }

@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.IO;
+using VecMath;
 
 namespace CsMmdDataIO.Pmx
 {
     [Serializable]
-    public class PmxModelData : IPmxData
+    public class PmxModelData
     {
         public PmxHeaderData Header { get; set; } = new PmxHeaderData();
         public PmxVertexData[] VertexArray { get; set; } = { };
@@ -29,78 +31,190 @@ namespace CsMmdDataIO.Pmx
             TextureFiles = CloneUtil.CloneArray(TextureFiles),
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer)
         {
-            ExportPmxData(Header, exporter);
-            ExportPmxData(VertexArray, exporter);
-            ExportData(VertexIndices, (i, ex) => ex.Write(i), exporter);
-            ExportData(TextureFiles, (s, ex) => ex.WriteText(s), exporter);
-            ExportPmxData(MaterialArray, exporter);
-            ExportPmxData(BoneArray, exporter);
-            ExportPmxData(MorphArray, exporter);
-            ExportPmxData(SlotArray, exporter);
-            exporter.Write(0);//Number of Rigid
-            exporter.Write(0);//Number of Joint
-            // exporter.Write(0);//Number of SoftBody
+            WritePmxData(Header, writer, Header);
+            WritePmxData(VertexArray, writer, Header);
+            WriteData(VertexIndices, (i, ex) => ex.Write(i), writer);
+            WriteData(TextureFiles, (s, ex) => ex.WriteText(Header.Encoding, s), writer);
+            WritePmxData(MaterialArray, writer, Header);
+            WritePmxData(BoneArray, writer, Header);
+            WritePmxData(MorphArray, writer, Header);
+            WritePmxData(SlotArray, writer, Header);
+            writer.Write(0);//Number of Rigid
+            writer.Write(0);//Number of Joint
+            writer.Write(0);//Number of SoftBody
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader)
         {
-            ParsePmxData(Header, parser);
-            VertexArray = ParsePmxData(len => new PmxVertexData[len], parser);
-            VertexIndices = ParseData(len => new int[len], (p, i) => p.ReadPmxId(parser.SizeVertex), parser);
-            TextureFiles = ParseData(len => new string[len], (p, i) => p.ReadText(), parser);
-            MaterialArray = ParsePmxData(len => new PmxMaterialData[len], parser);
-            BoneArray = ParsePmxData(len => new PmxBoneData[len], parser);
-            MorphArray = ParsePmxData(len => new PmxMorphData[len], parser);
-            SlotArray = ParsePmxData(len => new PmxSlotData[len], parser);
+            ParsePmxData(Header, reader, Header);
+            VertexArray = ParsePmxData<PmxVertexData>(reader, Header);
+            VertexIndices = ParseData<int>((p, i) => p.ReadPmxId(Header.VertexIndexSize), reader);
+            TextureFiles = ParseData<string>((p, i) => p.ReadText(Header.Encoding), reader);
+            MaterialArray = ParsePmxData<PmxMaterialData>(reader, Header);
+            BoneArray = ParsePmxData<PmxBoneData>(reader, Header);
+            MorphArray = ParsePmxData<PmxMorphData>(reader, Header);
+            SlotArray = ParsePmxData<PmxSlotData>(reader, Header);
         }
 
-        private void ExportData<T>(T[] data, Action<T, PmxExporter> action, PmxExporter exporter)
+        private void WriteData<T>(T[] data, Action<T, BinaryWriter> action, BinaryWriter writer)
         {
-            exporter.Write(data.Length);
-            Array.ForEach(data, d => action.Invoke(d, exporter));
+            writer.Write(data.Length);
+            Array.ForEach(data, d => action.Invoke(d, writer));
         }
 
-        private void ExportPmxData<T>(T data, PmxExporter exporter) where T : IPmxData
+        private void WritePmxData<T>(T data, BinaryWriter writer, PmxHeaderData header) where T : IPmxData
         {
-            data.Export(exporter);
+            data.Write(writer, header);
         }
 
-        private void ExportPmxData<T>(T[] data, PmxExporter exporter) where T : IPmxData
+        private void WritePmxData<T>(T[] data, BinaryWriter writer, PmxHeaderData header) where T : IPmxData
         {
-            exporter.Write(data.Length);
-            Array.ForEach(data, d => d.Export(exporter));
+            writer.Write(data.Length);
+            Array.ForEach(data, d => d.Write(writer, header));
         }
 
-        private T[] ParseData<T>(Func<int, T[]> func, Func<PmxParser, T, T> valueFunc, PmxParser parser)
+        private T[] ParseData<T>(Func<BinaryReader, T, T> valueFunc, BinaryReader reader)
         {
-            int len = parser.ReadInt32();
-            T[] array = func(len);
+            int len = reader.ReadInt32();
+            T[] array = new T[len];
 
             for (int i = 0; i < len; i++)
             {
-                array[i] = valueFunc(parser, array[i]);
+                array[i] = valueFunc(reader, array[i]);
             }
             return array;
         }
 
-        private void ParsePmxData<T>(T data, PmxParser parser) where T : IPmxData
+        private void ParsePmxData<T>(T data, BinaryReader reader, PmxHeaderData header) where T : IPmxData
         {
-            data.Parse(parser);
+            data.Parse(reader, header);
         }
 
-        private T[] ParsePmxData<T>(Func<int, T[]> func, PmxParser parser) where T : IPmxData, new()
+        private T[] ParsePmxData<T>(BinaryReader reader, PmxHeaderData header) where T : IPmxData, new()
         {
-            int len = parser.ReadInt32();
-            T[] array = func(len);
+            int len = reader.ReadInt32();
+            T[] array = new T[len];
 
             for (int i = 0; i < len; i++)
             {
                 array[i] = new T();
-                array[i].Parse(parser);
+                array[i].Parse(reader, header);
             }
             return array;
         }
+    }
+
+    public static class PmxBinaryIOExtensions
+    {
+        public static void WritePmxId(this BinaryWriter writer, int size, int id)
+        {
+            switch (size)
+            {
+                case 1:
+                    writer.Write((byte)id);
+                    break;
+
+                case 2:
+                    writer.Write((short)id);
+                    break;
+
+                case 4:
+                    writer.Write(id);
+                    break;
+
+                default:
+                    throw new ArgumentException("Unexpected size of byte was given");
+            }
+        }
+
+        public static void WriteText(this BinaryWriter writer, Encoding encoding, string text)
+        {
+            if (text == null) text = "";
+
+            byte[] bytes = encoding.GetBytes(text.ToCharArray());
+
+            writer.Write(bytes.Length);
+            writer.Write(bytes);
+        }
+
+        public static void Write(this BinaryWriter writer, Vector2 vec)
+        {
+            writer.Write(vec.x);
+            writer.Write(vec.y);
+        }
+
+        public static void Write(this BinaryWriter writer, Vector3 vec)
+        {
+            writer.Write(vec.x);
+            writer.Write(vec.y);
+            writer.Write(vec.z);
+        }
+
+        public static void Write(this BinaryWriter writer, Vector4 vec)
+        {
+            writer.Write(vec.x);
+            writer.Write(vec.y);
+            writer.Write(vec.z);
+            writer.Write(vec.w);
+        }
+
+        public static void Write(this BinaryWriter writer, Quaternion vec)
+        {
+            writer.Write(vec.x);
+            writer.Write(vec.y);
+            writer.Write(vec.z);
+            writer.Write(vec.w);
+        }
+
+        public static int ReadPmxId(this BinaryReader reader, byte size)
+        {
+            int id = 0;
+
+            switch (size)
+            {
+                case 1:
+                    id = reader.ReadByte();
+                    break;
+
+                case 2:
+                    id = reader.ReadInt16();
+                    break;
+
+                case 4:
+                    id = reader.ReadInt32();
+                    break;
+            }
+            return id;
+        }
+
+        public static string ReadText(this BinaryReader reader, Encoding encoding)
+        {
+            int len = reader.ReadInt32();
+            byte[] bytes = reader.ReadBytes(len);
+
+            string str = encoding.GetString(bytes);
+
+            return str;
+        }
+
+        public static Vector2 ReadVector2(this BinaryReader r) => new Vector2(r.ReadSingle(), r.ReadSingle());
+
+        public static Vector3 ReadVector3(this BinaryReader r) => new Vector3(r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
+
+        public static Vector4 ReadVector4(this BinaryReader r) => new Vector4(r.ReadSingle(), r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
+
+        public static Quaternion ReadQuaternion(this BinaryReader r) => new Quaternion(r.ReadSingle(), r.ReadSingle(), r.ReadSingle(), r.ReadSingle());
+    }
+
+    public enum IndexType : byte
+    {
+        VERTEX = 2,
+        TEXTURE = 3,
+        MATERIAL = 4,
+        BONE = 5,
+        MORPH = 6,
+        RIGID = 7,
     }
 }

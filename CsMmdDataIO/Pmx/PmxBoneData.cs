@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using VecMath;
 
 namespace CsMmdDataIO.Pmx
@@ -72,120 +72,120 @@ namespace CsMmdDataIO.Pmx
             };
         }
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WriteText(BoneName);
-            exporter.WriteText(BoneNameE);
+            writer.WriteText(header.Encoding, BoneName);
+            writer.WriteText(header.Encoding, BoneNameE);
 
-            exporter.Write(Pos);
-            exporter.WritePmxId(PmxExporter.SIZE_BONE, ParentId);
+            writer.Write(Pos);
+            writer.WritePmxId(header.BoneIndexSize, ParentId);
 
-            exporter.Write(Depth);
-            exporter.Write((short)Flag);
+            writer.Write(Depth);
+            writer.Write((short)Flag);
 
             if (Flag.HasFlag(BoneFlags.OFFSET))
             {
-                exporter.WritePmxId(PmxExporter.SIZE_BONE, ArrowId);
+                writer.WritePmxId(header.BoneIndexSize, ArrowId);
             }
             else
             {
-                exporter.Write(PosOffset);
+                writer.Write(PosOffset);
             }
 
             if (Flag.HasFlag(BoneFlags.ROTATE_LINK) || Flag.HasFlag(BoneFlags.MOVE_LINK))
             {
-                exporter.WritePmxId(PmxExporter.SIZE_BONE, LinkParentId);
-                exporter.Write(LinkWeight);
+                writer.WritePmxId(header.BoneIndexSize, LinkParentId);
+                writer.Write(LinkWeight);
             }
 
             if (Flag.HasFlag(BoneFlags.AXIS_ROTATE))
             {
-                exporter.Write(AxisVec);
+                writer.Write(AxisVec);
             }
 
             if (Flag.HasFlag(BoneFlags.LOCAL_AXIS))
             {
-                exporter.Write(LocalAxisVecX);
-                exporter.Write(LocalAxisVecZ);
+                writer.Write(LocalAxisVecX);
+                writer.Write(LocalAxisVecZ);
             }
 
             if (Flag.HasFlag(BoneFlags.EXTRA))
             {
-                exporter.Write(ExtraParentId);
+                writer.Write(ExtraParentId);
             }
 
             if (Flag.HasFlag(BoneFlags.IK))
             {
-                exporter.WritePmxId(PmxExporter.SIZE_BONE, IkTargetId);
+                writer.WritePmxId(header.BoneIndexSize, IkTargetId);
 
-                exporter.Write(IkDepth);
-                exporter.Write(AngleLimit);
+                writer.Write(IkDepth);
+                writer.Write(AngleLimit);
 
                 int boneNum = IkChilds.Length;
 
                 for (int i = 0; i < boneNum; i++)
                 {
-                    IkChilds[i].Export(exporter);
+                    IkChilds[i].Write(writer, header);
                 }
             }
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            BoneName = parser.ReadText();
-            BoneNameE = parser.ReadText();
+            BoneName = reader.ReadText(header.Encoding);
+            BoneNameE = reader.ReadText(header.Encoding);
 
-            Pos = parser.ReadVector3();
-            ParentId = parser.ReadPmxId(parser.SizeBone);
+            Pos = reader.ReadVector3();
+            ParentId = reader.ReadPmxId(header.BoneIndexSize);
 
-            Depth = parser.ReadInt32();
-            Flag = (BoneFlags)parser.ReadInt16();
+            Depth = reader.ReadInt32();
+            Flag = (BoneFlags)reader.ReadInt16();
 
             if (Flag.HasFlag(BoneFlags.OFFSET))
             {
-                ArrowId = parser.ReadPmxId(parser.SizeBone);
+                ArrowId = reader.ReadPmxId(header.BoneIndexSize);
             }
             else
             {
-                PosOffset = parser.ReadVector3();
+                PosOffset = reader.ReadVector3();
             }
 
             if (Flag.HasFlag(BoneFlags.ROTATE_LINK) || Flag.HasFlag(BoneFlags.MOVE_LINK))
             {
-                LinkParentId = parser.ReadPmxId(parser.SizeBone);
-                LinkWeight = parser.ReadSingle();
+                LinkParentId = reader.ReadPmxId(header.BoneIndexSize);
+                LinkWeight = reader.ReadSingle();
             }
 
             if (Flag.HasFlag(BoneFlags.AXIS_ROTATE))
             {
-                AxisVec = parser.ReadVector3();
+                AxisVec = reader.ReadVector3();
             }
 
             if (Flag.HasFlag(BoneFlags.LOCAL_AXIS))
             {
-                LocalAxisVecX = parser.ReadVector3();
-                LocalAxisVecZ = parser.ReadVector3();
+                LocalAxisVecX = reader.ReadVector3();
+                LocalAxisVecZ = reader.ReadVector3();
             }
 
             if (Flag.HasFlag(BoneFlags.EXTRA))
             {
-                ExtraParentId = parser.ReadInt32();
+                ExtraParentId = reader.ReadInt32();
             }
 
             if (Flag.HasFlag(BoneFlags.IK))
             {
-                IkTargetId = parser.ReadPmxId(parser.SizeBone);
+                IkTargetId = reader.ReadPmxId(header.BoneIndexSize);
 
-                IkDepth = parser.ReadInt32();
-                AngleLimit = parser.ReadSingle();
+                IkDepth = reader.ReadInt32();
+                AngleLimit = reader.ReadSingle();
 
-                int boneNum = parser.ReadInt32();
+                int boneNum = reader.ReadInt32();
                 IkChilds = new PmxIkData[boneNum];
 
                 for (int i = 0; i < boneNum; i++)
                 {
                     IkChilds[i] = new PmxIkData();
-                    IkChilds[i].Parse(parser);
+                    IkChilds[i].Parse(reader, header);
                 }
             }
         }
@@ -222,30 +222,30 @@ namespace CsMmdDataIO.Pmx
             AngleMax = AngleMax
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_BONE, ChildId);
+            writer.WritePmxId(header.BoneIndexSize, ChildId);
 
             int limit = AngleMin == Vector3.Zero && AngleMax == Vector3.Zero ? 0 : 1;
-            exporter.Write((byte)limit);
+            writer.Write((byte)limit);
 
             if (limit > 0)
             {
-                exporter.Write(AngleMin);
-                exporter.Write(AngleMax);
+                writer.Write(AngleMin);
+                writer.Write(AngleMax);
             }
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            ChildId = parser.ReadPmxId(parser.SizeBone);
+            ChildId = reader.ReadPmxId(header.BoneIndexSize);
 
-            int limit = parser.ReadByte();
+            int limit = reader.ReadByte();
 
             if (limit > 0)
             {
-                AngleMin = parser.ReadVector3();
-                AngleMax = parser.ReadVector3();
+                AngleMin = reader.ReadVector3();
+                AngleMax = reader.ReadVector3();
             }
         }
     }

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 
 namespace CsMmdDataIO.Vmd
 {
@@ -18,19 +18,19 @@ namespace CsMmdDataIO.Vmd
             IKEnabled = new Dictionary<string, bool>();
         }
 
-        public void Export(VmdExporter exporter)
+        public void Write(BinaryWriter writer)
         {
-            exporter.Write(FrameTime);
-            exporter.Write(IsVisible ? (byte)1 : (byte)0);
+            writer.Write(FrameTime);
+            writer.Write(IsVisible ? (byte)1 : (byte)0);
 
             if(IKEnabled != null)
             {
-                exporter.Write(IKEnabled.Count);
+                writer.Write(IKEnabled.Count);
 
                 foreach (var pair in IKEnabled)
                 {
-                    exporter.WriteTextWithFixedLength(pair.Key, 20);
-                    exporter.Write(pair.Value ? (byte)1 : (byte)0);
+                    writer.WriteTextWithFixedLength(pair.Key, 20);
+                    writer.Write(pair.Value ? (byte)1 : (byte)0);
                 }
             }
         }

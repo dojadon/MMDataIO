@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 using VecMath;
 
@@ -43,22 +43,22 @@ namespace CsMmdDataIO.Pmx
             Sdef_r1 = Sdef_r1,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.Write(Pos);
-            exporter.Write(Normal);
-            exporter.Write(Uv);
+            writer.Write(Pos);
+            writer.Write(Normal);
+            writer.Write(Uv);
 
-            // for (byte i = 0; i < num_uv; i++)
+            // for (byte i = 0; i < header.; i++)
             // {
-            // exporter.dumpLeFloat(uvEX.x).dumpLeFloat(uvEX.y).dumpLeFloat(uvEX.z).dumpLeFloat(uvEX.w);
+            // writer.dumpLeFloat(uvEX.x).dumpLeFloat(uvEX.y).dumpLeFloat(uvEX.z).dumpLeFloat(uvEX.w);
             // }
 
-            exporter.Write((byte)WeightType);
+            writer.Write((byte)WeightType);
 
             for (byte i = 0; i < BoneId.Length; i++)
             {
-                exporter.WritePmxId(PmxExporter.SIZE_BONE, BoneId[i]);
+                writer.WritePmxId(header.BoneIndexSize, BoneId[i]);
             }
 
             switch (WeightType)
@@ -68,33 +68,33 @@ namespace CsMmdDataIO.Pmx
 
                 case WeightType.BDEF2:
                 case WeightType.SDEF:
-                    exporter.Write(Weight[0]);
+                    writer.Write(Weight[0]);
                     break;
 
                 case WeightType.BDEF4:
                     for (byte i = 0; i < 4; i++)
                     {
-                        exporter.Write(Weight[i]);
+                        writer.Write(Weight[i]);
                     }
                     break;
             }
 
             if (WeightType == WeightType.SDEF)
             {
-                exporter.Write(Sdef_c);
-                exporter.Write(Sdef_r0);
-                exporter.Write(Sdef_r1);
+                writer.Write(Sdef_c);
+                writer.Write(Sdef_r0);
+                writer.Write(Sdef_r1);
             }
-            exporter.Write(Edge);
+            writer.Write(Edge);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Pos = parser.ReadVector3();
-            Normal = parser.ReadVector3();
-            Uv = parser.ReadVector2();
+            Pos = reader.ReadVector3();
+            Normal = reader.ReadVector3();
+            Uv = reader.ReadVector2();
 
-            WeightType = (WeightType)parser.ReadByte();
+            WeightType = (WeightType)reader.ReadByte();
 
             switch (WeightType)
             {
@@ -114,7 +114,7 @@ namespace CsMmdDataIO.Pmx
 
             for (int i = 0; i < BoneId.Length; i++)
             {
-                BoneId[i] = parser.ReadPmxId(parser.SizeBone);
+                BoneId[i] = reader.ReadPmxId(header.BoneIndexSize);
             }
 
             switch (WeightType)
@@ -125,7 +125,7 @@ namespace CsMmdDataIO.Pmx
 
                 case WeightType.BDEF2:
                 case WeightType.SDEF:
-                    float we = parser.ReadSingle();
+                    float we = reader.ReadSingle();
                     Weight = new float[] { we, 1 - we };
                     break;
 
@@ -133,18 +133,18 @@ namespace CsMmdDataIO.Pmx
                     Weight = new float[4];
                     for (byte i = 0; i < 4; i++)
                     {
-                        Weight[i] = parser.ReadSingle();
+                        Weight[i] = reader.ReadSingle();
                     }
                     break;
             }
 
             if (WeightType == WeightType.SDEF)
             {
-                Sdef_c = parser.ReadVector3();
-                Sdef_r0 = parser.ReadVector3();
-                Sdef_r1 = parser.ReadVector3();
+                Sdef_c = reader.ReadVector3();
+                Sdef_r0 = reader.ReadVector3();
+                Sdef_r1 = reader.ReadVector3();
             }
-            Edge = parser.ReadSingle();
+            Edge = reader.ReadSingle();
         }
     }
 

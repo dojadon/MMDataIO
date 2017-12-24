@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 
 namespace CsMmdDataIO.Pmx
 {
@@ -20,33 +21,33 @@ namespace CsMmdDataIO.Pmx
             MorphArray = CloneUtil.CloneArray(MorphArray),
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WriteText(MorphName);
-            exporter.WriteText(MorphNameE);
+            writer.WriteText(header.Encoding, MorphName);
+            writer.WriteText(header.Encoding, MorphNameE);
 
-            exporter.Write((byte)SlotType);
+            writer.Write((byte)SlotType);
 
-            exporter.Write((byte)MorphType);
+            writer.Write((byte)MorphType);
 
-            exporter.Write(MorphArray.Length);
+            writer.Write(MorphArray.Length);
 
             for (int i = 0; i < MorphArray.Length; i++)
             {
-                MorphArray[i].Export(exporter);
+                MorphArray[i].Write(writer, header);
             }
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            MorphName = parser.ReadText();
-            MorphNameE = parser.ReadText();
+            MorphName = reader.ReadText(header.Encoding);
+            MorphNameE = reader.ReadText(header.Encoding);
 
-            SlotType = (MorphSlotType)parser.ReadByte();
+            SlotType = (MorphSlotType)reader.ReadByte();
 
-            MorphType = (MorphType)parser.ReadByte();
+            MorphType = (MorphType)reader.ReadByte();
 
-            int elementCount = parser.ReadInt32();
+            int elementCount = reader.ReadInt32();
             MorphArray = new IPmxMorphTypeData[elementCount];
 
             Func<IPmxMorphTypeData> factory = () => null;
@@ -81,7 +82,7 @@ namespace CsMmdDataIO.Pmx
             for (int i = 0; i < MorphArray.Length; i++)
             {
                 MorphArray[i] = factory();
-                MorphArray[i].Parse(parser);
+                MorphArray[i].Parse(reader, header);
             }
         }
     }

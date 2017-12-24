@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using VecMath;
 
 namespace CsMmdDataIO.Pmx
@@ -25,20 +25,20 @@ namespace CsMmdDataIO.Pmx
             Rotation = Rotation,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_BONE, Index);
+            writer.WritePmxId(header.BoneIndexSize, Index);
 
-            exporter.Write(Position);
-            exporter.Write(Rotation);
+            writer.Write(Position);
+            writer.Write(Rotation);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Index = parser.ReadPmxId(parser.SizeBone);
+            Index = reader.ReadPmxId(header.BoneIndexSize);
 
-            Position = parser.ReadVector3();
-            Rotation = parser.ReadQuaternion();
+            Position = reader.ReadVector3();
+            Rotation = reader.ReadQuaternion();
         }
     }
 
@@ -54,16 +54,16 @@ namespace CsMmdDataIO.Pmx
             Weight = Weight,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_MORPH, Index);
-            exporter.Write(Weight);
+            writer.WritePmxId(header.MorphIndexSize, Index);
+            writer.Write(Weight);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Index = parser.ReadPmxId(parser.SizeMorph);
-            Weight = parser.ReadSingle();
+            Index = reader.ReadPmxId(header.MorphIndexSize);
+            Weight = reader.ReadSingle();
         }
     }
 
@@ -98,36 +98,36 @@ namespace CsMmdDataIO.Pmx
             ToonTexture = ToonTexture,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_MATERIAL, Index);
+            writer.WritePmxId(header.MaterialIndexSize, Index);
 
-            exporter.Write(CalcType);
-            exporter.Write(Diffuse);
-            exporter.Write(Specular);
-            exporter.Write(Shininess);
-            exporter.Write(Ambient);
-            exporter.Write(Edge);
-            exporter.Write(EdgeThick);
-            exporter.Write(Texture);
-            exporter.Write(SphereTexture);
-            exporter.Write(ToonTexture);
+            writer.Write(CalcType);
+            writer.Write(Diffuse);
+            writer.Write(Specular);
+            writer.Write(Shininess);
+            writer.Write(Ambient);
+            writer.Write(Edge);
+            writer.Write(EdgeThick);
+            writer.Write(Texture);
+            writer.Write(SphereTexture);
+            writer.Write(ToonTexture);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Index = parser.ReadPmxId(parser.SizeMaterial);
+            Index = reader.ReadPmxId(header.MaterialIndexSize);
 
-            CalcType = parser.ReadByte();
-            Diffuse = parser.ReadVector4();
-            Specular = parser.ReadVector3();
-            Shininess = parser.ReadSingle();
-            Ambient = parser.ReadVector3();
-            Edge = parser.ReadVector4();
-            EdgeThick = parser.ReadSingle();
-            Texture = parser.ReadVector4();
-            SphereTexture = parser.ReadVector4();
-            ToonTexture = parser.ReadVector4();
+            CalcType = reader.ReadByte();
+            Diffuse = reader.ReadVector4();
+            Specular = reader.ReadVector3();
+            Shininess = reader.ReadSingle();
+            Ambient = reader.ReadVector3();
+            Edge = reader.ReadVector4();
+            EdgeThick = reader.ReadSingle();
+            Texture = reader.ReadVector4();
+            SphereTexture = reader.ReadVector4();
+            ToonTexture = reader.ReadVector4();
         }
     }
 
@@ -143,16 +143,16 @@ namespace CsMmdDataIO.Pmx
             Uv = Uv,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_VERTEX, Index);
-            exporter.Write(Uv);
+            writer.WritePmxId(header.VertexIndexSize, Index);
+            writer.Write(Uv);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Index = parser.ReadPmxId(parser.SizeVertex);
-            Uv = parser.ReadVector4();
+            Index = reader.ReadPmxId(header.VertexIndexSize);
+            Uv = reader.ReadVector4();
         }
     }
 
@@ -168,16 +168,16 @@ namespace CsMmdDataIO.Pmx
             Position = Position,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WritePmxId(PmxExporter.SIZE_VERTEX, Index);
-            exporter.Write(Position);
+            writer.WritePmxId(header.VertexIndexSize, Index);
+            writer.Write(Position);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            Index = parser.ReadPmxId(parser.SizeVertex);
-            Position = parser.ReadVector3();
+            Index = reader.ReadPmxId(header.VertexIndexSize);
+            Position = reader.ReadVector3();
         }
     }
 }

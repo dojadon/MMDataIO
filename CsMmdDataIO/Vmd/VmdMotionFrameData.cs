@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using VecMath;
 
 namespace CsMmdDataIO.Vmd
@@ -110,16 +110,16 @@ namespace CsMmdDataIO.Vmd
             InterpolatePointR = new byte[4];
         }
 
-        public void Export(VmdExporter exporter)
+        public void Write(BinaryWriter writer)
         {
-            exporter.WriteTextWithFixedLength(Name, VmdExporter.BONE_NAME_LENGTH);
-            exporter.Write(FrameTime);
-            exporter.Write(Pos);
-            exporter.Write(Rot);
-            ExportInterpolateData(exporter);
+            writer.WriteTextWithFixedLength(Name, VmdMotionData.BONE_NAME_LENGTH);
+            writer.Write(FrameTime);
+            writer.Write(Pos);
+            writer.Write(Rot);
+            WriteInterpolateData(writer);
         }
 
-        private void ExportInterpolateData(VmdExporter exporter)
+        private void WriteInterpolateData(BinaryWriter writer)
         {
             byte[][] interpolatePoint = new byte[][] { InterpolatePointX, InterpolatePointY, InterpolatePointZ, InterpolatePointR };
 
@@ -144,7 +144,7 @@ namespace CsMmdDataIO.Vmd
             }
 
             dist[31] = dist[46] = dist[61] = 1;
-            exporter.Write(dist);
+            writer.Write(dist);
         }
 
         public static byte[] ConvertToBytes(Vector2 pos1, Vector2 pos2)

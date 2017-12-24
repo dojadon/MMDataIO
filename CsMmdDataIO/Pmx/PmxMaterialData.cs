@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.IO;
 using VecMath;
 
 namespace CsMmdDataIO.Pmx
@@ -53,72 +53,72 @@ namespace CsMmdDataIO.Pmx
             FaceCount = FaceCount,
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WriteText(MaterialName);
-            exporter.WriteText(MaterialNameE);
+            writer.WriteText(header.Encoding, MaterialName);
+            writer.WriteText(header.Encoding, MaterialNameE);
 
-            exporter.Write(Diffuse);
-            exporter.Write(Specular);
-            exporter.Write(Shininess);
-            exporter.Write(Ambient);
+            writer.Write(Diffuse);
+            writer.Write(Specular);
+            writer.Write(Shininess);
+            writer.Write(Ambient);
 
-            exporter.Write((byte)Flag);
+            writer.Write((byte)Flag);
 
-            exporter.Write(Edge);
-            exporter.Write(EdgeThick);
+            writer.Write(Edge);
+            writer.Write(EdgeThick);
 
-            exporter.WritePmxId(PmxExporter.SIZE_TEXTURE, TextureId);
-            exporter.WritePmxId(PmxExporter.SIZE_TEXTURE, SphereId);
-            exporter.Write((byte)Mode);
-            exporter.Write((byte)SharedToon);
+            writer.WritePmxId(header.TextureIndexSize, TextureId);
+            writer.WritePmxId(header.TextureIndexSize, SphereId);
+            writer.Write((byte)Mode);
+            writer.Write((byte)SharedToon);
 
             if (SharedToon == 0)
             {
-                exporter.WritePmxId(PmxExporter.SIZE_TEXTURE, ToonId);
+                writer.WritePmxId(header.TextureIndexSize, ToonId);
             }
             else
             {
-                exporter.Write((byte)ToonId);
+                writer.Write((byte)ToonId);
             }
 
-            exporter.WriteText(Script);
+            writer.WriteText(header.Encoding, Script);
 
-            exporter.Write(FaceCount);
+            writer.Write(FaceCount);
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            MaterialName = parser.ReadText();
-            MaterialNameE = parser.ReadText();
+            MaterialName = reader.ReadText(header.Encoding);
+            MaterialNameE = reader.ReadText(header.Encoding);
 
-            Diffuse = parser.ReadVector4();
-            Specular = parser.ReadVector3();
-            Shininess = parser.ReadSingle();
-            Ambient = parser.ReadVector3();
+            Diffuse = reader.ReadVector4();
+            Specular = reader.ReadVector3();
+            Shininess = reader.ReadSingle();
+            Ambient = reader.ReadVector3();
 
-            Flag = (RenderFlags)parser.ReadByte();
+            Flag = (RenderFlags)reader.ReadByte();
 
-            Edge = parser.ReadVector4();
-            EdgeThick = parser.ReadSingle();
+            Edge = reader.ReadVector4();
+            EdgeThick = reader.ReadSingle();
 
-            TextureId = parser.ReadPmxId(parser.SizeTexture);
-            SphereId = parser.ReadPmxId(parser.SizeTexture);
-            Mode = (SphereMode)parser.ReadByte();
-            SharedToon = (ToonMode)parser.ReadByte();
+            TextureId = reader.ReadPmxId(header.TextureIndexSize);
+            SphereId = reader.ReadPmxId(header.TextureIndexSize);
+            Mode = (SphereMode)reader.ReadByte();
+            SharedToon = (ToonMode)reader.ReadByte();
 
             if (SharedToon == 0)
             {
-                ToonId = parser.ReadPmxId(parser.SizeTexture);
+                ToonId = reader.ReadPmxId(header.TextureIndexSize);
             }
             else
             {
-                ToonId = parser.ReadByte();
+                ToonId = reader.ReadByte();
             }
 
-            Script = parser.ReadText();
+            Script = reader.ReadText(header.Encoding);
 
-            FaceCount = parser.ReadInt32();
+            FaceCount = reader.ReadInt32();
         }
     }
 

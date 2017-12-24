@@ -40,18 +40,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CloneUtil.cs" />
-    <Compile Include="ExporterBase.cs" />
-    <Compile Include="ParserBase.cs" />
     <Compile Include="Vmd\IKeyFrame.cs" />
     <Compile Include="Vmd\VmdPropertyFrameData.cs" />
-    <Compile Include="Vmd\VmdExporter.cs" />
     <Compile Include="Vmd\IVmdData.cs" />
     <Compile Include="Vmd\VmdHeaderData.cs" />
     <Compile Include="Vmd\VmdMorphFrameData.cs" />
     <Compile Include="Vmd\VmdMotionData.cs" />
     <Compile Include="Vmd\VmdMotionFrameData.cs" />
-    <Compile Include="Pmx\PmxParser.cs" />
-    <Compile Include="Pmx\PmxExporter.cs" />
     <Compile Include="Pmx\IPmxData.cs" />
     <Compile Include="Pmx\IPmxMorphTypeData.cs" />
     <Compile Include="Pmx\PmxBoneData.cs" />

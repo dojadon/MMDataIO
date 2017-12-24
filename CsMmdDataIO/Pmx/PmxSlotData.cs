@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.IO;
 using System.Text;
 
 namespace CsMmdDataIO.Pmx
@@ -24,43 +24,43 @@ namespace CsMmdDataIO.Pmx
             Indices = CloneUtil.CloneArray(Indices),
         };
 
-        public void Export(PmxExporter exporter)
+        public void Write(BinaryWriter writer, PmxHeaderData header)
         {
-            exporter.WriteText(SlotName);
-            exporter.WriteText(SlotNameE);
+            writer.WriteText(header.Encoding, SlotName);
+            writer.WriteText(header.Encoding, SlotNameE);
 
-            exporter.Write((byte)(NormalSlot ? 0 : 1));
+            writer.Write((byte)(NormalSlot ? 0 : 1));
 
             int elementCount = Indices.Length;
-            exporter.Write(elementCount);
+            writer.Write(elementCount);
 
-            byte size = Type == SlotType.BONE ? PmxExporter.SIZE_BONE : PmxExporter.SIZE_MORPH;
+            byte size = Type == SlotType.BONE ? header.BoneIndexSize : header.MorphIndexSize;
 
             for (int i = 0; i < elementCount; i++)
             {
-                exporter.Write((byte)Type);
+                writer.Write((byte)Type);
 
                 int id = Indices[i];
-                exporter.WritePmxId(size, id);
+                writer.WritePmxId(size, id);
             }
         }
 
-        public void Parse(PmxParser parser)
+        public void Parse(BinaryReader reader, PmxHeaderData header)
         {
-            SlotName = parser.ReadText();
-            SlotNameE = parser.ReadText();
+            SlotName = reader.ReadText(header.Encoding);
+            SlotNameE = reader.ReadText(header.Encoding);
 
-            NormalSlot = parser.ReadByte() == 0;
+            NormalSlot = reader.ReadByte() == 0;
 
-            int elementCount = parser.ReadInt32();
+            int elementCount = reader.ReadInt32();
             Indices = new int[elementCount];
 
             for (int i = 0; i < elementCount; i++)
             {
-                byte type = parser.ReadByte();
-                byte size = type == (byte)SlotType.BONE ? parser.SizeBone : parser.SizeMorph;
+                byte type = reader.ReadByte();
+                byte size = type == (byte)SlotType.BONE ? header.BoneIndexSize : header.MorphIndexSize;
 
-                Indices[i] = parser.ReadPmxId(size);
+                Indices[i] = reader.ReadPmxId(size);
             }
         }
     }
