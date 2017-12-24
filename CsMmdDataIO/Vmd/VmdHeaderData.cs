@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO.Vmd.Data
+namespace CsMmdDataIO.Vmd
 {
     public class VmdHeaderData : IVmdData
     {

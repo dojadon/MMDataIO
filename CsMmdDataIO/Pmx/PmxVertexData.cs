@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx.Data
+namespace CsMmdDataIO.Pmx
 {
     [Serializable]
     public class PmxVertexData : IPmxData

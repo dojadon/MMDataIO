@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO.Vmd.Data
+namespace CsMmdDataIO.Vmd
 {
-    public interface IKeyFrame
+    internal interface IVmdData
     {
-        long FrameTime { get; set; }
+        void Export(VmdExporter exporter);
     }
 }

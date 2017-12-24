@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO.Pmx.Data
+namespace CsMmdDataIO.Pmx
 {
     [Serializable]
     public class PmxSlotData : IPmxData

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using CsMmdDataIO.Pmx.Data;
+using CsMmdDataIO.Pmx;
 using VecMath;
 
 namespace CsMmdDataIO.Pmx

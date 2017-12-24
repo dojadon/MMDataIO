@@ -3,24 +3,24 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO.Vmd.Data
+namespace CsMmdDataIO.Vmd
 {
     public class VmdMotionData : IVmdData
     {
         public VmdHeaderData Header { get; set; } = new VmdHeaderData();
-        public VmdMotionFrameData[] MotionArray { get; set; } = { };
-        public VmdMorphFrameData[] MorphArray { get; set; } = { };
-        public VmdPropertyFrameData[] PropertyArray { get; set; } = { };
+        public VmdMotionFrameData[] MotionFrameArray { get; set; } = { };
+        public VmdMorphFrameData[] MorphFrameArray { get; set; } = { };
+        public VmdPropertyFrameData[] PropertyFrameArray { get; set; } = { };
 
         public void Export(VmdExporter exporter)
         {
             ExportVmdData(Header, exporter);
-            ExportVmdData(MotionArray, exporter);
-            ExportVmdData(MorphArray, exporter);
+            ExportVmdData(MotionFrameArray, exporter);
+            ExportVmdData(MorphFrameArray, exporter);
             exporter.Write(0); //camera
             exporter.Write(0); //light
             exporter.Write(0); //self shadow
-            ExportVmdData(PropertyArray, exporter);
+            ExportVmdData(PropertyFrameArray, exporter);
         }
 
         private void ExportVmdData<T>(T[] data, VmdExporter exporter) where T : IVmdData

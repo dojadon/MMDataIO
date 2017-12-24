@@ -42,32 +42,36 @@
     <Compile Include="CloneUtil.cs" />
     <Compile Include="ExporterBase.cs" />
     <Compile Include="ParserBase.cs" />
-    <Compile Include="Vmd\Data\IKeyFrame.cs" />
-    <Compile Include="Vmd\Data\VmdPropertyFrameData.cs" />
+    <Compile Include="Vmd\IKeyFrame.cs" />
+    <Compile Include="Vmd\VmdPropertyFrameData.cs" />
     <Compile Include="Vmd\VmdExporter.cs" />
-    <Compile Include="Vmd\Data\IVmdData.cs" />
-    <Compile Include="Vmd\Data\VmdHeaderData.cs" />
-    <Compile Include="Vmd\Data\VmdMorphFrameData.cs" />
-    <Compile Include="Vmd\Data\VmdMotionData.cs" />
-    <Compile Include="Vmd\Data\VmdMotionFrameData.cs" />
+    <Compile Include="Vmd\IVmdData.cs" />
+    <Compile Include="Vmd\VmdHeaderData.cs" />
+    <Compile Include="Vmd\VmdMorphFrameData.cs" />
+    <Compile Include="Vmd\VmdMotionData.cs" />
+    <Compile Include="Vmd\VmdMotionFrameData.cs" />
     <Compile Include="Pmx\PmxParser.cs" />
     <Compile Include="Pmx\PmxExporter.cs" />
-    <Compile Include="Pmx\Data\IPmxData.cs" />
-    <Compile Include="Pmx\Data\IPmxMorphTypeData.cs" />
-    <Compile Include="Pmx\Data\PmxBoneData.cs" />
-    <Compile Include="Pmx\Data\PmxHeaderData.cs" />
-    <Compile Include="Pmx\Data\PmxMaterialData.cs" />
-    <Compile Include="Pmx\Data\PmxModelData.cs" />
-    <Compile Include="Pmx\Data\PmxMorphData.cs" />
-    <Compile Include="Pmx\Data\PmxSlotData.cs" />
-    <Compile Include="Pmx\Data\PmxVertexData.cs" />
+    <Compile Include="Pmx\IPmxData.cs" />
+    <Compile Include="Pmx\IPmxMorphTypeData.cs" />
+    <Compile Include="Pmx\PmxBoneData.cs" />
+    <Compile Include="Pmx\PmxHeaderData.cs" />
+    <Compile Include="Pmx\PmxMaterialData.cs" />
+    <Compile Include="Pmx\PmxModelData.cs" />
+    <Compile Include="Pmx\PmxMorphData.cs" />
+    <Compile Include="Pmx\PmxSlotData.cs" />
+    <Compile Include="Pmx\PmxVertexData.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\VecMath\VecMath.csproj">
-      <Project>{454be0aa-4fab-4df4-842a-da450652c5ec}</Project>
+    <ProjectReference Include="..\..\VecMath\VecMath\VecMath.csproj">
+      <Project>{008f0133-2636-42a3-b17b-d0631c5132d6}</Project>
       <Name>VecMath</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy CsMmdDataIO.* C:\tool\model\MikuMikuMoving64_v1275\System\x64
+copy CsMmdDataIO.dll C:\tool\model\MikuMikuMoving64_v1275\CurtainFireMaker\System\x64</PostBuildEvent>
+  </PropertyGroup>
 </Project>

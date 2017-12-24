@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using VecMath;
-using CsMmdDataIO.Vmd.Data;
+using CsMmdDataIO.Vmd;
 
 namespace CsMmdDataIO.Vmd
 {
@@ -25,6 +25,11 @@ namespace CsMmdDataIO.Vmd
         public void Export(VmdMotionData data)
         {
             data.Export(this);
+        }
+
+        public static void Export(VmdMotionData data, Stream stream)
+        {
+            new VmdExporter(stream).Export(data);
         }
     }
 }

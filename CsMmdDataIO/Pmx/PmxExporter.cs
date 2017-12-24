@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 using VecMath;
-using CsMmdDataIO.Pmx.Data;
+using CsMmdDataIO.Pmx;
 
 namespace CsMmdDataIO.Pmx
 {
@@ -11,11 +11,11 @@ namespace CsMmdDataIO.Pmx
         public override Encoding CharEncording { get; } = Encoding.GetEncoding("utf-16");
 
         public const byte SIZE_VERTEX = 4;
-        public const byte SIZE_TEXTURE = 2;
-        public const byte SIZE_MATERIAL = 4;
-        public const byte SIZE_BONE = 4;
-        public const byte SIZE_MORPH = 4;
-        public const byte SIZE_RIGID = 2;
+        public const byte SIZE_TEXTURE = 1;
+        public const byte SIZE_MATERIAL = 1;
+        public const byte SIZE_BONE = 2;
+        public const byte SIZE_MORPH = 1;
+        public const byte SIZE_RIGID = 1;
 
         public static readonly byte[] SIZE = { 0, 0, SIZE_VERTEX, SIZE_TEXTURE, SIZE_MATERIAL, SIZE_BONE, SIZE_MORPH, SIZE_RIGID };
 
@@ -23,9 +23,14 @@ namespace CsMmdDataIO.Pmx
         {
         }
 
-        public void Export(PmxModelData data)
+        public void ExportModelData(PmxModelData data)
         {
             data.Export(this);
+        }
+
+        public static void Export(PmxModelData data, Stream OutStream)
+        {
+            new PmxExporter(OutStream).ExportModelData(data);
         }
 
         public PmxExporter WritePmxId(byte size, int id)

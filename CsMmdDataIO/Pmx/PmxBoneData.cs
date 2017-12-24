@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx.Data
+namespace CsMmdDataIO.Pmx
 {
     [Serializable]
     public class PmxBoneData : IPmxData
@@ -20,7 +20,7 @@ namespace CsMmdDataIO.Pmx.Data
         /** 子(次)ボーンID. 末端の場合は0. */
         public int ArrowId { get; set; }
         /** flags フラグが収められてる16 bit. */
-        public short Flag { get; set; }
+        public BoneFlags Flag { get; set; }
         /** 外部親のID. */
         public int ExtraParentId { get; set; }
         /** 変形階層 */
@@ -81,9 +81,9 @@ namespace CsMmdDataIO.Pmx.Data
             exporter.WritePmxId(PmxExporter.SIZE_BONE, ParentId);
 
             exporter.Write(Depth);
-            exporter.Write(Flag);
+            exporter.Write((short)Flag);
 
-            if ((BoneFlags.OFFSET & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.OFFSET))
             {
                 exporter.WritePmxId(PmxExporter.SIZE_BONE, ArrowId);
             }
@@ -92,29 +92,29 @@ namespace CsMmdDataIO.Pmx.Data
                 exporter.Write(PosOffset);
             }
 
-            if ((BoneFlags.ROTATE_LINK & Flag) > 0 || (BoneFlags.MOVE_LINK & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.ROTATE_LINK) || Flag.HasFlag(BoneFlags.MOVE_LINK))
             {
                 exporter.WritePmxId(PmxExporter.SIZE_BONE, LinkParentId);
                 exporter.Write(LinkWeight);
             }
 
-            if ((BoneFlags.AXIS_ROTATE & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.AXIS_ROTATE))
             {
                 exporter.Write(AxisVec);
             }
 
-            if ((BoneFlags.LOCAL_AXIS & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.LOCAL_AXIS))
             {
                 exporter.Write(LocalAxisVecX);
                 exporter.Write(LocalAxisVecZ);
             }
 
-            if ((BoneFlags.EXTRA & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.EXTRA))
             {
                 exporter.Write(ExtraParentId);
             }
 
-            if ((BoneFlags.IK & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.IK))
             {
                 exporter.WritePmxId(PmxExporter.SIZE_BONE, IkTargetId);
 
@@ -139,9 +139,9 @@ namespace CsMmdDataIO.Pmx.Data
             ParentId = parser.ReadPmxId(parser.SizeBone);
 
             Depth = parser.ReadInt32();
-            Flag = parser.ReadInt16();
+            Flag = (BoneFlags)parser.ReadInt16();
 
-            if ((BoneFlags.OFFSET & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.OFFSET))
             {
                 ArrowId = parser.ReadPmxId(parser.SizeBone);
             }
@@ -150,29 +150,29 @@ namespace CsMmdDataIO.Pmx.Data
                 PosOffset = parser.ReadVector3();
             }
 
-            if ((BoneFlags.ROTATE_LINK & Flag) > 0 || (BoneFlags.MOVE_LINK & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.ROTATE_LINK) || Flag.HasFlag(BoneFlags.MOVE_LINK))
             {
                 LinkParentId = parser.ReadPmxId(parser.SizeBone);
                 LinkWeight = parser.ReadSingle();
             }
 
-            if ((BoneFlags.AXIS_ROTATE & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.AXIS_ROTATE))
             {
                 AxisVec = parser.ReadVector3();
             }
 
-            if ((BoneFlags.LOCAL_AXIS & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.LOCAL_AXIS))
             {
                 LocalAxisVecX = parser.ReadVector3();
                 LocalAxisVecZ = parser.ReadVector3();
             }
 
-            if ((BoneFlags.EXTRA & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.EXTRA))
             {
                 ExtraParentId = parser.ReadInt32();
             }
 
-            if ((BoneFlags.IK & Flag) > 0)
+            if (Flag.HasFlag(BoneFlags.IK))
             {
                 IkTargetId = parser.ReadPmxId(parser.SizeBone);
 
@@ -191,34 +191,22 @@ namespace CsMmdDataIO.Pmx.Data
         }
     }
 
-    public class BoneFlags
+    [Flags]
+    public enum BoneFlags : short
     {
-        /** オフセット. (0:のときオフセット. 1:のときボーン.) */
-        public const short OFFSET = 0x0001;
-        /** 回転. */
-        public const short ROTATE = 0x0002;
-        /** 移動. */
-        public const short MOVE = 0x0004;
-        /** 表示. */
-        public const short VISIBLE = 0x0008;
-        /** 操作. */
-        public const short OP = 0x0010;
-        /** IK. */
-        public const short IK = 0x0020;
-        /** ローカル付与フラグ. */
-        public const short LOCAL_LINK = 0x0080;
-        /** 回転付与. */
-        public const short ROTATE_LINK = 0x0100;
-        /** 移動付与. */
-        public const short MOVE_LINK = 0x0200;
-        /** 回転軸固定. */
-        public const short AXIS_ROTATE = 0x0400;
-        /** ローカル座標軸. */
-        public const short LOCAL_AXIS = 0x0800;
-        /** 物理後変形 */
-        public const short PHYSICAL = 0x1000;
-        /** 外部親変形 */
-        public const short EXTRA = 0x2000;
+        OFFSET = 0x0001,
+        ROTATE = 0x0002,
+        MOVE = 0x0004,
+        VISIBLE = 0x0008,
+        OP = 0x0010,
+        IK = 0x0020,
+        LOCAL_LINK = 0x0080,
+        ROTATE_LINK = 0x0100,
+        MOVE_LINK = 0x0200,
+        AXIS_ROTATE = 0x0400,
+        LOCAL_AXIS = 0x0800,
+        PHYSICAL = 0x1000,
+        EXTRA = 0x2000,
     }
 
     public struct PmxIkData : IPmxData

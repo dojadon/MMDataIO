@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CsMmdDataIO.Vmd.Data
+namespace CsMmdDataIO.Vmd
 {
     public struct VmdPropertyFrameData : IVmdData, IKeyFrame
     {
-        public long FrameTime { get; set; }
+        public int FrameTime { get; set; }
         public bool IsVisible { get; set; }
         public Dictionary<string, bool> IKEnabled { get; set; }
 
-        public VmdPropertyFrameData(long frameTime, bool isVisible)
+        public VmdPropertyFrameData(int frameTime, bool isVisible)
         {
             FrameTime = frameTime;
             IsVisible = isVisible;
@@ -20,7 +20,7 @@ namespace CsMmdDataIO.Vmd.Data
 
         public void Export(VmdExporter exporter)
         {
-            exporter.Write((int)FrameTime);
+            exporter.Write(FrameTime);
             exporter.Write(IsVisible ? (byte)1 : (byte)0);
 
             if(IKEnabled != null)

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace CsMmdDataIO.Pmx.Data
+namespace CsMmdDataIO.Pmx
 {
     [Serializable]
     public class PmxMorphData : IPmxData

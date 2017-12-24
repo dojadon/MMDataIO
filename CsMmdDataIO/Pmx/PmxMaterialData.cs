@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx.Data
+namespace CsMmdDataIO.Pmx
 {
     [Serializable]
     public class PmxMaterialData : IPmxData
@@ -14,7 +14,7 @@ namespace CsMmdDataIO.Pmx.Data
 
         public string Script { get; set; } = "";
 
-        public byte Flag { get; set; }
+        public RenderFlags Flag { get; set; }
 
         public Vector4 Edge { get; set; } = new Vector4();
         public float EdgeThick { get; set; }
@@ -63,7 +63,7 @@ namespace CsMmdDataIO.Pmx.Data
             exporter.Write(Shininess);
             exporter.Write(Ambient);
 
-            exporter.Write(Flag);
+            exporter.Write((byte)Flag);
 
             exporter.Write(Edge);
             exporter.Write(EdgeThick);
@@ -97,7 +97,7 @@ namespace CsMmdDataIO.Pmx.Data
             Shininess = parser.ReadSingle();
             Ambient = parser.ReadVector3();
 
-            Flag = parser.ReadByte();
+            Flag = (RenderFlags)parser.ReadByte();
 
             Edge = parser.ReadVector4();
             EdgeThick = parser.ReadSingle();
@@ -122,6 +122,7 @@ namespace CsMmdDataIO.Pmx.Data
         }
     }
 
+    [Flags]
     public enum RenderFlags : byte
     {
         DOUBLE_SIDED = 0x01,
