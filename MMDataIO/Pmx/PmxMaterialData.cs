@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxMaterialData : IPmxData
@@ -87,7 +87,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(FaceCount);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             MaterialName = reader.ReadText(header.Encoding);
             MaterialNameE = reader.ReadText(header.Encoding);

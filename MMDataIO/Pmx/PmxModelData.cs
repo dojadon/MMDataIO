@@ -5,7 +5,7 @@ using System.Text;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxModelData
@@ -46,16 +46,16 @@ namespace CsMmdDataIO.Pmx
             writer.Write(0);//Number of SoftBody
         }
 
-        public void Parse(BinaryReader reader)
+        public void Read(BinaryReader reader)
         {
-            ParsePmxData(Header, reader, Header);
-            VertexArray = ParsePmxData<PmxVertexData>(reader, Header);
-            VertexIndices = ParseData<int>((p, i) => p.ReadPmxId(Header.VertexIndexSize), reader);
-            TextureFiles = ParseData<string>((p, i) => p.ReadText(Header.Encoding), reader);
-            MaterialArray = ParsePmxData<PmxMaterialData>(reader, Header);
-            BoneArray = ParsePmxData<PmxBoneData>(reader, Header);
-            MorphArray = ParsePmxData<PmxMorphData>(reader, Header);
-            SlotArray = ParsePmxData<PmxSlotData>(reader, Header);
+            ReadPmxData(Header, reader, Header);
+            VertexArray = ReadPmxData<PmxVertexData>(reader, Header);
+            VertexIndices = ReadData<int>((p, i) => p.ReadPmxId(Header.VertexIndexSize), reader);
+            TextureFiles = ReadData<string>((p, i) => p.ReadText(Header.Encoding), reader);
+            MaterialArray = ReadPmxData<PmxMaterialData>(reader, Header);
+            BoneArray = ReadPmxData<PmxBoneData>(reader, Header);
+            MorphArray = ReadPmxData<PmxMorphData>(reader, Header);
+            SlotArray = ReadPmxData<PmxSlotData>(reader, Header);
         }
 
         private void WriteData<T>(T[] data, Action<T, BinaryWriter> action, BinaryWriter writer)
@@ -75,7 +75,7 @@ namespace CsMmdDataIO.Pmx
             Array.ForEach(data, d => d.Write(writer, header));
         }
 
-        private T[] ParseData<T>(Func<BinaryReader, T, T> valueFunc, BinaryReader reader)
+        private T[] ReadData<T>(Func<BinaryReader, T, T> valueFunc, BinaryReader reader)
         {
             int len = reader.ReadInt32();
             T[] array = new T[len];
@@ -87,12 +87,12 @@ namespace CsMmdDataIO.Pmx
             return array;
         }
 
-        private void ParsePmxData<T>(T data, BinaryReader reader, PmxHeaderData header) where T : IPmxData
+        private void ReadPmxData<T>(T data, BinaryReader reader, PmxHeaderData header) where T : IPmxData
         {
-            data.Parse(reader, header);
+            data.Read(reader, header);
         }
 
-        private T[] ParsePmxData<T>(BinaryReader reader, PmxHeaderData header) where T : IPmxData, new()
+        private T[] ReadPmxData<T>(BinaryReader reader, PmxHeaderData header) where T : IPmxData, new()
         {
             int len = reader.ReadInt32();
             T[] array = new T[len];
@@ -100,7 +100,7 @@ namespace CsMmdDataIO.Pmx
             for (int i = 0; i < len; i++)
             {
                 array[i] = new T();
-                array[i].Parse(reader, header);
+                array[i].Read(reader, header);
             }
             return array;
         }

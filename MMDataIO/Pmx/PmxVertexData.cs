@@ -4,7 +4,7 @@ using System.IO;
 using System.Text;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxVertexData : IPmxData
@@ -88,7 +88,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(Edge);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Pos = reader.ReadVector3();
             Normal = reader.ReadVector3();

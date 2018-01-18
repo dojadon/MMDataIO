@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxSlotData : IPmxData
@@ -45,7 +45,7 @@ namespace CsMmdDataIO.Pmx
             }
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             SlotName = reader.ReadText(header.Encoding);
             SlotNameE = reader.ReadText(header.Encoding);

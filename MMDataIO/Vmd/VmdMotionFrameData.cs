@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Vmd
+namespace MMDataIO.Vmd
 {
     public struct VmdMotionFrameData : IVmdData, IElementKeyFrame
     {

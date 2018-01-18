@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxBoneData : IPmxData
@@ -130,7 +130,7 @@ namespace CsMmdDataIO.Pmx
             }
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             BoneName = reader.ReadText(header.Encoding);
             BoneNameE = reader.ReadText(header.Encoding);
@@ -185,7 +185,7 @@ namespace CsMmdDataIO.Pmx
                 for (int i = 0; i < boneNum; i++)
                 {
                     IkChilds[i] = new PmxIkData();
-                    IkChilds[i].Parse(reader, header);
+                    IkChilds[i].Read(reader, header);
                 }
             }
         }
@@ -236,7 +236,7 @@ namespace CsMmdDataIO.Pmx
             }
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             ChildId = reader.ReadPmxId(header.BoneIndexSize);
 

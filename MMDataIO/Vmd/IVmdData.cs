@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-namespace CsMmdDataIO.Vmd
+namespace MMDataIO.Vmd
 {
     internal interface IVmdData
     {

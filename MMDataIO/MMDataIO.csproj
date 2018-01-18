@@ -7,8 +7,8 @@
     <ProjectGuid>{1AEF787F-B0ED-44B4-B091-6570888A91F7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>CsMmdDataIO</RootNamespace>
-    <AssemblyName>CsMmdDataIO</AssemblyName>
+    <RootNamespace>MMDataIO</RootNamespace>
+    <AssemblyName>MMDataIO</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -22,7 +22,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
@@ -66,7 +66,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy CsMmdDataIO.* C:\tool\model\MikuMikuMoving64_v1275\System\x64
-copy CsMmdDataIO.dll C:\tool\model\MikuMikuMoving64_v1275\CurtainFireMaker\System\x64</PostBuildEvent>
+    <PostBuildEvent>copy $(TargetFileName) C:\tool\CG_Animation\MikuMikuMoving64_v1275\System\x64
+copy $(TargetFileName) C:\tool\CG_Animation\MikuMikuMoving64_v1275\CurtainFireMaker\System\x64</PostBuildEvent>
   </PropertyGroup>
 </Project>

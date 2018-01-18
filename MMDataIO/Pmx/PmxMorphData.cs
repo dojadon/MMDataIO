@@ -1,7 +1,7 @@
 ﻿using System;
 using System.IO;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxMorphData : IPmxData
@@ -38,7 +38,7 @@ namespace CsMmdDataIO.Pmx
             }
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             MorphName = reader.ReadText(header.Encoding);
             MorphNameE = reader.ReadText(header.Encoding);
@@ -82,7 +82,7 @@ namespace CsMmdDataIO.Pmx
             for (int i = 0; i < MorphArray.Length; i++)
             {
                 MorphArray[i] = factory();
-                MorphArray[i].Parse(reader, header);
+                MorphArray[i].Read(reader, header);
             }
         }
     }

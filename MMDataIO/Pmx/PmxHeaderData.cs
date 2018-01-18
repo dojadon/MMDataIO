@@ -2,7 +2,7 @@
 using System.Text;
 using System.IO;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     [Serializable]
     public class PmxHeaderData : IPmxData
@@ -12,7 +12,7 @@ namespace CsMmdDataIO.Pmx
         protected const string LF = "\n"; // 0x0a
         protected const string CRLF = CR + LF; // 0x0d, 0x0a
 
-        public Encoding Encoding { get; set; } = Encoding.UTF8;
+        public Encoding Encoding { get; set; } = Encoding.GetEncoding("utf-16");
         public byte NumberOfExtraUv { get; set; }
         public byte VertexIndexSize { get; set; }
         public byte TextureIndexSize { get; set; }
@@ -58,7 +58,7 @@ namespace CsMmdDataIO.Pmx
             writer.WriteText(Encoding, DescriptionE.Replace(LF, CRLF));
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             reader.ReadBytes(MAGIC_BYTES.Length);
             Version = reader.ReadSingle();

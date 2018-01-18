@@ -4,7 +4,7 @@ using System.Text;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Vmd
+namespace MMDataIO.Vmd
 {
     public class VmdMotionData
     {

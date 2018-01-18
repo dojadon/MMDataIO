@@ -4,7 +4,7 @@ using System.Linq;
 using System.IO;
 using VecMath;
 
-namespace CsMmdDataIO.Pmx
+namespace MMDataIO.Pmx
 {
     public interface IPmxMorphTypeData : IPmxData
     {
@@ -33,7 +33,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(Rotation);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Index = reader.ReadPmxId(header.BoneIndexSize);
 
@@ -60,7 +60,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(Weight);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Index = reader.ReadPmxId(header.MorphIndexSize);
             Weight = reader.ReadSingle();
@@ -114,7 +114,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(ToonTexture);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Index = reader.ReadPmxId(header.MaterialIndexSize);
 
@@ -149,7 +149,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(Uv);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Index = reader.ReadPmxId(header.VertexIndexSize);
             Uv = reader.ReadVector4();
@@ -174,7 +174,7 @@ namespace CsMmdDataIO.Pmx
             writer.Write(Position);
         }
 
-        public void Parse(BinaryReader reader, PmxHeaderData header)
+        public void Read(BinaryReader reader, PmxHeaderData header)
         {
             Index = reader.ReadPmxId(header.VertexIndexSize);
             Position = reader.ReadVector3();
