@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text;
+using System.Linq;
 using VecMath;
 
 namespace MMDataIO.Pmx
@@ -9,16 +9,47 @@ namespace MMDataIO.Pmx
     [Serializable]
     public class PmxVertexData : IPmxData
     {
-        public const byte WEIGHT_TYPE_BDEF1 = 0;
-        public const byte WEIGHT_TYPE_BDEF2 = 1;
-        public const byte WEIGHT_TYPE_BDEF4 = 2;
-        public const byte WEIGHT_TYPE_SDEF = 3;
+        public Vector3 Pos;
+        public Vector3 Normal;
+        public Vector2 Uv;
 
-        public int VertexId { get; set; }
+        public Vector4 GetExtraUv(int idx)
+        {
+            switch (idx)
+            {
+                case 0: return ExtraUv1;
+                case 1: return ExtraUv2;
+                case 2: return ExtraUv3;
+                case 3: return ExtraUv4;
+            }
+            throw new ArgumentOutOfRangeException($"Out of range {idx}");
+        }
 
-        public Vector3 Pos { get; set; }
-        public Vector3 Normal { get; set; }
-        public Vector2 Uv { get; set; }
+        public void SetExtraUv(int idx, Vector4 value)
+        {
+            switch (idx)
+            {
+                case 0:
+                    ExtraUv1 = value;
+                    break;
+                case 1:
+                    ExtraUv2 = value;
+                    break;
+                case 2:
+                    ExtraUv3 = value;
+                    break;
+                case 3:
+                    ExtraUv4 = value;
+                    break;
+            }
+            throw new ArgumentOutOfRangeException($"Out of range {idx}");
+        }
+
+        public Vector4 ExtraUv1;
+        public Vector4 ExtraUv2;
+        public Vector4 ExtraUv3;
+        public Vector4 ExtraUv4;
+
         public float Edge { get; set; }
 
         public WeightType WeightType { get; set; }
@@ -30,7 +61,6 @@ namespace MMDataIO.Pmx
 
         public object Clone() => new PmxVertexData()
         {
-            VertexId = VertexId,
             Pos = Pos,
             Normal = Normal,
             Uv = Uv,
@@ -49,10 +79,10 @@ namespace MMDataIO.Pmx
             writer.Write(Normal);
             writer.Write(Uv);
 
-            // for (byte i = 0; i < header.; i++)
-            // {
-            // writer.dumpLeFloat(uvEX.x).dumpLeFloat(uvEX.y).dumpLeFloat(uvEX.z).dumpLeFloat(uvEX.w);
-            // }
+            for (int i = 0; i < header.NumberOfExtraUv; i++)
+            {
+                writer.Write(GetExtraUv(i));
+            }
 
             writer.Write((byte)WeightType);
 
@@ -94,11 +124,13 @@ namespace MMDataIO.Pmx
             Normal = reader.ReadVector3();
             Uv = reader.ReadVector2();
 
+            foreach (int i in Enumerable.Range(0, header.NumberOfExtraUv)) SetExtraUv(i, reader.ReadVector4());
+
             WeightType = (WeightType)reader.ReadByte();
 
             switch (WeightType)
             {
-                case WEIGHT_TYPE_BDEF1:
+                case WeightType.BDEF1:
                     BoneId = new int[1];
                     break;
 
@@ -119,7 +151,7 @@ namespace MMDataIO.Pmx
 
             switch (WeightType)
             {
-                case WEIGHT_TYPE_BDEF1:
+                case WeightType.BDEF1:
                     Weight = new float[] { 1 };
                     break;
 
@@ -145,6 +177,20 @@ namespace MMDataIO.Pmx
                 Sdef_r1 = reader.ReadVector3();
             }
             Edge = reader.ReadSingle();
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+            Pos = reader.ReadVector3();
+            Normal = reader.ReadVector3();
+            Uv = reader.ReadVector2();
+
+            WeightType = WeightType.BDEF2;
+            BoneId = new int[] { reader.ReadUInt16(), reader.ReadUInt16() };
+            float we = reader.ReadByte() / 100.0F;
+            Weight = new float[] { we, 1 - we };
+
+            Edge = reader.ReadBoolean() ? 0 : 1;
         }
     }
 

@@ -9,5 +9,6 @@ namespace MMDataIO.Pmx
     {
         void Write(BinaryWriter writer, PmxHeaderData header);
         void Read(BinaryReader reader, PmxHeaderData header);
+        void ReadPmd(BinaryReader reader, PmxHeaderData header);
     }
 }

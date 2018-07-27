@@ -85,6 +85,10 @@ namespace MMDataIO.Pmx
                 MorphArray[i].Read(reader, header);
             }
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+        }
     }
 
     public enum MorphSlotType : byte

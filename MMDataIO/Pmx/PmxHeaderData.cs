@@ -12,6 +12,11 @@ namespace MMDataIO.Pmx
         protected const string LF = "\n"; // 0x0a
         protected const string CRLF = CR + LF; // 0x0d, 0x0a
 
+        private static readonly byte[] PMD_MAGIC_BYTES = { 0x50, 0x6d, 0x64, /*"Pmd"*/ 0x00, 0x00, 0x80, 0x3f /* 1.0f*/};
+
+        public const int PMD_MODELNAME_LEN = 20;
+        public const int PMD_MODELDESC_LEN = 256;
+
         public Encoding Encoding { get; set; } = Encoding.GetEncoding("utf-16");
         public byte NumberOfExtraUv { get; set; }
         public byte VertexIndexSize { get; set; }
@@ -78,6 +83,14 @@ namespace MMDataIO.Pmx
 
             Description = reader.ReadText(Encoding);
             DescriptionE = reader.ReadText(Encoding);
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+            reader.ReadBytes(PMD_MAGIC_BYTES.Length);
+
+            ModelName = reader.ReadText(Encoding, PMD_MODELNAME_LEN);
+            Description = reader.ReadText(Encoding, PMD_MODELDESC_LEN);
         }
     }
 }

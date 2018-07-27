@@ -63,6 +63,10 @@ namespace MMDataIO.Pmx
                 Indices[i] = reader.ReadPmxId(size);
             }
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+        }
     }
 
     public enum SlotType : byte

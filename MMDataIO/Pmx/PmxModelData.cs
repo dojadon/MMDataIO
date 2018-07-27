@@ -58,6 +58,18 @@ namespace MMDataIO.Pmx
             SlotArray = ReadPmxData<PmxSlotData>(reader, Header);
         }
 
+        public void ReadPmd(BinaryReader reader)
+        {
+            ReadPmxData(Header, reader, Header, true);
+            VertexArray = ReadPmxData<PmxVertexData>(reader, Header, true);
+            VertexIndices = ReadData<int>((p, i) => p.ReadUInt16(), reader);
+            TextureFiles = ReadData<string>((p, i) => p.ReadText(Header.Encoding), reader);
+            MaterialArray = ReadPmxData<PmxMaterialData>(reader, Header, true);
+            BoneArray = ReadPmxData<PmxBoneData>(reader, Header, reader.ReadUInt16(), true);
+            MorphArray = ReadPmxData<PmxMorphData>(reader, Header, true);
+            SlotArray = ReadPmxData<PmxSlotData>(reader, Header, true);
+        }
+
         private void WriteData<T>(T[] data, Action<T, BinaryWriter> action, BinaryWriter writer)
         {
             writer.Write(data.Length);
@@ -87,20 +99,39 @@ namespace MMDataIO.Pmx
             return array;
         }
 
-        private void ReadPmxData<T>(T data, BinaryReader reader, PmxHeaderData header) where T : IPmxData
+        private void ReadPmxData<T>(T data, BinaryReader reader, PmxHeaderData header, bool pmd = false) where T : IPmxData
         {
-            data.Read(reader, header);
+            if (pmd)
+            {
+                data.ReadPmd(reader, header);
+            }
+            else
+            {
+                data.Read(reader, header);
+            }
         }
 
-        private T[] ReadPmxData<T>(BinaryReader reader, PmxHeaderData header) where T : IPmxData, new()
+        private T[] ReadPmxData<T>(BinaryReader reader, PmxHeaderData header, bool pmd = false) where T : IPmxData, new()
         {
-            int len = reader.ReadInt32();
+            return ReadPmxData<T>(reader, header, reader.ReadInt32(), pmd);
+        }
+
+        private T[] ReadPmxData<T>(BinaryReader reader, PmxHeaderData header, int len, bool pmd = false) where T : IPmxData, new()
+        {
             T[] array = new T[len];
 
             for (int i = 0; i < len; i++)
             {
                 array[i] = new T();
-                array[i].Read(reader, header);
+
+                if (pmd)
+                {
+                    array[i].ReadPmd(reader, header);
+                }
+                else
+                {
+                    array[i].Read(reader, header);
+                }
             }
             return array;
         }
@@ -197,6 +228,15 @@ namespace MMDataIO.Pmx
             string str = encoding.GetString(bytes);
 
             return str;
+        }
+
+        public static string ReadText(this BinaryReader reader, Encoding encoding, int length)
+        {
+            byte[] bytes = reader.ReadBytes(length);
+
+            string str = encoding.GetString(bytes);
+
+            return str.TrimEnd();
         }
 
         public static Vector2 ReadVector2(this BinaryReader r) => new Vector2(r.ReadSingle(), r.ReadSingle());

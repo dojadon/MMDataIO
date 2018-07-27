@@ -9,6 +9,8 @@ namespace MMDataIO.Pmx
     [Serializable]
     public class PmxMaterialData : IPmxData
     {
+        public const int PMD_TEXTUREFILENAME_LEN = 20;
+
         public string MaterialName { get; set; } = "";
         public string MaterialNameE { get; set; } = "";
 
@@ -119,6 +121,29 @@ namespace MMDataIO.Pmx
             Script = reader.ReadText(header.Encoding);
 
             FaceCount = reader.ReadInt32();
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+            Diffuse = reader.ReadVector4();
+            Shininess = reader.ReadSingle();
+            Specular = reader.ReadVector3();
+            Ambient = reader.ReadVector3();
+
+            Edge = new Vector4(1, 1, 1, 1);
+            EdgeThick = 1.0F;
+
+            SharedToon = ToonMode.SHARED_FILE;
+            ToonId = reader.ReadByte();
+
+            if(reader.ReadBoolean())
+            {
+                Flag |= RenderFlags.EDGE;
+            }
+
+            FaceCount = reader.ReadInt32();
+
+            reader.ReadBytes(PMD_TEXTUREFILENAME_LEN); // テクスチャ未実装
         }
     }
 

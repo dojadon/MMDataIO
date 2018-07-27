@@ -104,10 +104,10 @@ namespace MMDataIO.Vmd
             FrameTime = frameTime;
             Pos = pos;
             Rot = rot;
-            InterpolatePointX = new byte[4];
-            InterpolatePointY = new byte[4];
-            InterpolatePointZ = new byte[4];
-            InterpolatePointR = new byte[4];
+            InterpolatePointX = new byte[] { 64, 64, 64, 64};
+            InterpolatePointY = new byte[] { 64, 64, 64, 64 };
+            InterpolatePointZ = new byte[] { 64, 64, 64, 64 };
+            InterpolatePointR = new byte[] { 64, 64, 64, 64 };
         }
 
         public void Write(BinaryWriter writer)

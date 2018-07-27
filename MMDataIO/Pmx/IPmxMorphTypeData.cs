@@ -40,6 +40,10 @@ namespace MMDataIO.Pmx
             Position = reader.ReadVector3();
             Rotation = reader.ReadQuaternion();
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+        }
     }
 
     [Serializable]
@@ -64,6 +68,10 @@ namespace MMDataIO.Pmx
         {
             Index = reader.ReadPmxId(header.MorphIndexSize);
             Weight = reader.ReadSingle();
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
         }
     }
 
@@ -129,6 +137,10 @@ namespace MMDataIO.Pmx
             SphereTexture = reader.ReadVector4();
             ToonTexture = reader.ReadVector4();
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+        }
     }
 
     [Serializable]
@@ -154,6 +166,10 @@ namespace MMDataIO.Pmx
             Index = reader.ReadPmxId(header.VertexIndexSize);
             Uv = reader.ReadVector4();
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+        }
     }
 
     [Serializable]
@@ -178,6 +194,10 @@ namespace MMDataIO.Pmx
         {
             Index = reader.ReadPmxId(header.VertexIndexSize);
             Position = reader.ReadVector3();
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
         }
     }
 }

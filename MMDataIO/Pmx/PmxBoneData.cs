@@ -9,39 +9,37 @@ namespace MMDataIO.Pmx
     [Serializable]
     public class PmxBoneData : IPmxData
     {
+        public const int PMD_BONENAME_LEN = 20;
+
         public String BoneName { get; set; } = "";
         public String BoneNameE { get; set; } = "";
-        /** 座標 */
+
         public Vector3 Pos { get; set; }
-        /** ボーンID */
+
         public int BoneId { get; set; }
-        /** 親(前)ボーンID. 無い場合は0xffff(-1). */
+
         public int ParentId { get; set; }
-        /** 子(次)ボーンID. 末端の場合は0. */
+
         public int ArrowId { get; set; }
-        /** flags フラグが収められてる16 bit. */
+
         public BoneFlags Flag { get; set; }
-        /** 外部親のID. */
+
         public int ExtraParentId { get; set; }
-        /** 変形階層 */
+
         public int Depth { get; set; }
-        /** 矢先相対座標 */
+
         public Vector3 PosOffset { get; set; }
-        /** 連動親ボーンID. */
+
         public int LinkParentId { get; set; }
-        /** 連動比. 負を指定することも可能. */
         public float LinkWeight { get; set; }
-        /** 軸の絶対座標 */
+
         public Vector3 AxisVec { get; set; }
-        /** ローカルx軸 */
+
         public Vector3 LocalAxisVecX { get; set; }
-        /** ローカルz軸 */
         public Vector3 LocalAxisVecZ { get; set; }
-        /** IKボーンが接近しようとするIK接続先ボーンID */
+
         public int IkTargetId { get; set; }
-        /** 再帰演算の深さ */
         public int IkDepth { get; set; }
-        /** 制限角度強度 */
         public float AngleLimit { get; set; }
 
         public PmxIkData[] IkChilds { get; set; } = { };
@@ -189,7 +187,35 @@ namespace MMDataIO.Pmx
                 }
             }
         }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+            BoneName = reader.ReadText(header.Encoding, PMD_BONENAME_LEN);
+
+            ParentId = reader.ReadUInt16();
+            ArrowId = reader.ReadUInt16();
+
+            byte type = reader.ReadByte();
+
+            int ikId = reader.ReadUInt16();
+
+            Pos = reader.ReadVector3();
+        }
     }
+
+    public enum PmdBoneType : byte
+    {
+        ROTATE = 0,
+        ROTATE_MOVE = 1,
+        IK = 2,
+        UNKNOWN = 3,
+
+        IK_TARGET = 6,
+        INVISIBLE = 7,
+        TWIST = 8,
+        LINK_ROTATE = 9,
+    }
+
 
     [Flags]
     public enum BoneFlags : short
@@ -247,6 +273,10 @@ namespace MMDataIO.Pmx
                 AngleMin = reader.ReadVector3();
                 AngleMax = reader.ReadVector3();
             }
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
         }
     }
 }
