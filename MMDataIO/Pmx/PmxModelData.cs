@@ -16,6 +16,7 @@ namespace MMDataIO.Pmx
         public PmxBoneData[] BoneArray { get; set; } = { };
         public PmxMorphData[] MorphArray { get; set; } = { };
         public PmxSlotData[] SlotArray { get; set; } = { };
+        public PmxRigidData[] RigidArray { get; set; } = { };
         public int[] VertexIndices { get; set; } = { };
         public string[] TextureFiles { get; set; } = { };
 
@@ -27,23 +28,41 @@ namespace MMDataIO.Pmx
             BoneArray = CloneUtil.CloneArray(BoneArray),
             MorphArray = CloneUtil.CloneArray(MorphArray),
             SlotArray = CloneUtil.CloneArray(SlotArray),
+            RigidArray = CloneUtil.CloneArray(RigidArray),
             VertexIndices = CloneUtil.CloneArray(VertexIndices),
             TextureFiles = CloneUtil.CloneArray(TextureFiles),
         };
 
         public void Write(BinaryWriter writer)
         {
+            Header.VertexIndexSize = CalcIndexSize(VertexArray.Length);
+            Header.TextureIndexSize = CalcIndexSize(TextureFiles.Length);
+            Header.MaterialIndexSize = CalcIndexSize(MaterialArray.Length);
+            Header.BoneIndexSize = CalcIndexSize(BoneArray.Length);
+            Header.MorphIndexSize = CalcIndexSize(MorphArray.Length);
+            Header.RigidIndexSize = CalcIndexSize(RigidArray.Length);
+
             WritePmxData(Header, writer, Header);
             WritePmxData(VertexArray, writer, Header);
-            WriteData(VertexIndices, (i, ex) => ex.Write(i), writer);
+            WriteData(VertexIndices, (i, ex) => ex.WritePmxId(Header.VertexIndexSize, i), writer);
             WriteData(TextureFiles, (s, ex) => ex.WriteText(Header.Encoding, s), writer);
             WritePmxData(MaterialArray, writer, Header);
             WritePmxData(BoneArray, writer, Header);
             WritePmxData(MorphArray, writer, Header);
             WritePmxData(SlotArray, writer, Header);
-            writer.Write(0);//Number of Rigid
+            WritePmxData(RigidArray, writer, Header);
             writer.Write(0);//Number of Joint
             writer.Write(0);//Number of SoftBody
+
+            byte CalcIndexSize(int count)
+            {
+                if (count <= sbyte.MaxValue)
+                    return 1;
+                else if (count <= short.MaxValue)
+                    return 2;
+                else
+                    return 4;
+            };
         }
 
         public void Read(BinaryReader reader)
@@ -56,6 +75,7 @@ namespace MMDataIO.Pmx
             BoneArray = ReadPmxData<PmxBoneData>(reader, Header);
             MorphArray = ReadPmxData<PmxMorphData>(reader, Header);
             SlotArray = ReadPmxData<PmxSlotData>(reader, Header);
+            RigidArray = ReadPmxData<PmxRigidData>(reader, Header);
         }
 
         public void ReadPmd(BinaryReader reader)

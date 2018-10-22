@@ -31,16 +31,16 @@ namespace MMDataIO.Pmx
             {
                 case 0:
                     ExtraUv1 = value;
-                    break;
+                    return;
                 case 1:
                     ExtraUv2 = value;
-                    break;
+                    return;
                 case 2:
                     ExtraUv3 = value;
-                    break;
+                    return;
                 case 3:
                     ExtraUv4 = value;
-                    break;
+                    return;
             }
             throw new ArgumentOutOfRangeException($"Out of range {idx}");
         }

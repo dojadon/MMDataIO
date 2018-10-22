@@ -11,38 +11,38 @@ namespace MMDataIO.Pmx
     {
         public const int PMD_BONENAME_LEN = 20;
 
-        public String BoneName { get; set; } = "";
-        public String BoneNameE { get; set; } = "";
+        public String BoneName = "";
+        public String BoneNameE = "";
 
-        public Vector3 Pos { get; set; }
+        public Vector3 Pos;
 
-        public int BoneId { get; set; }
+        public int BoneId;
 
-        public int ParentId { get; set; }
+        public int ParentId;
 
-        public int ArrowId { get; set; }
+        public int ArrowId;
 
-        public BoneFlags Flag { get; set; }
+        public BoneFlags Flag;
 
-        public int ExtraParentId { get; set; }
+        public int ExtraParentId;
 
-        public int Depth { get; set; }
+        public int Depth;
 
-        public Vector3 PosOffset { get; set; }
+        public Vector3 PosOffset;
 
-        public int LinkParentId { get; set; }
-        public float LinkWeight { get; set; }
+        public int LinkParentId;
+        public float LinkWeight;
 
-        public Vector3 AxisVec { get; set; }
+        public Vector3 AxisVec;
 
-        public Vector3 LocalAxisVecX { get; set; }
-        public Vector3 LocalAxisVecZ { get; set; }
+        public Vector3 LocalAxisVecX;
+        public Vector3 LocalAxisVecZ;
 
-        public int IkTargetId { get; set; }
-        public int IkDepth { get; set; }
-        public float AngleLimit { get; set; }
+        public int IkTargetId;
+        public int IkDepth;
+        public float AngleLimit;
 
-        public PmxIkData[] IkChilds { get; set; } = { };
+        public PmxIkData[] IkChilds = { };
 
         public object Clone()
         {
@@ -121,6 +121,7 @@ namespace MMDataIO.Pmx
 
                 int boneNum = IkChilds.Length;
 
+                writer.Write(boneNum);
                 for (int i = 0; i < boneNum; i++)
                 {
                     IkChilds[i].Write(writer, header);

@@ -200,4 +200,42 @@ namespace MMDataIO.Pmx
         {
         }
     }
+
+    [Serializable]
+    public struct PmxMorphImpulseData : IPmxMorphTypeData
+    {
+        public int Index { get; set; }
+        public bool IsLocal { get; set; }
+        public Vector3 Velocity { get; set; }
+        public Vector3 Torque { get; set; }
+
+        public object Clone() => new PmxMorphImpulseData
+        {
+            Index = Index,
+            IsLocal = IsLocal,
+            Velocity = Velocity,
+            Torque = Torque
+        };
+
+        public void Read(BinaryReader reader, PmxHeaderData header)
+        {
+            Index = reader.ReadPmxId(header.RigidIndexSize);
+            IsLocal = reader.ReadBoolean();
+            Velocity = reader.ReadVector3();
+            Torque = reader.ReadVector3();
+        }
+
+        public void ReadPmd(BinaryReader reader, PmxHeaderData header)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Write(BinaryWriter writer, PmxHeaderData header)
+        {
+            writer.WritePmxId(header.RigidIndexSize, Index);
+            writer.Write(IsLocal);
+            writer.Write(Velocity);
+            writer.Write(Torque);
+        }
+    }
 }

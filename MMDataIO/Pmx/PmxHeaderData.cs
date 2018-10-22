@@ -18,13 +18,13 @@ namespace MMDataIO.Pmx
         public const int PMD_MODELDESC_LEN = 256;
 
         public Encoding Encoding { get; set; } = Encoding.GetEncoding("utf-16");
-        public byte NumberOfExtraUv { get; set; }
-        public byte VertexIndexSize { get; set; }
-        public byte TextureIndexSize { get; set; }
-        public byte MaterialIndexSize { get; set; }
-        public byte BoneIndexSize { get; set; }
-        public byte MorphIndexSize { get; set; }
-        public byte RigidIndexSize { get; set; }
+        public byte NumberOfExtraUv { get; private set; }
+        public byte VertexIndexSize { get; private set; }
+        public byte TextureIndexSize { get; private set; }
+        public byte MaterialIndexSize { get; private set; }
+        public byte BoneIndexSize { get; private set; }
+        public byte MorphIndexSize { get; private set; }
+        public byte RigidIndexSize { get; private set; }
 
         public float Version { get; set; }
         public string ModelName { get; set; } = "";

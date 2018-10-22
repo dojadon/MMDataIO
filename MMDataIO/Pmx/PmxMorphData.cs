@@ -77,6 +77,13 @@ namespace MMDataIO.Pmx
                 case MorphType.MATERIAL:
                     factory = () => new PmxMorphMaterialData();
                     break;
+
+                case MorphType.IMPULSE:
+                    factory = () => new PmxMorphImpulseData();
+                    break;
+
+                default:
+                    return;
             }
 
             for (int i = 0; i < MorphArray.Length; i++)
@@ -110,6 +117,8 @@ namespace MMDataIO.Pmx
         EXUV2 = 5,
         EXUV3 = 6,
         EXUV4 = 7,
-        MATERIAL = 8
+        MATERIAL = 8,
+        FLIP = 9,
+        IMPULSE = 10,
     }
 }
