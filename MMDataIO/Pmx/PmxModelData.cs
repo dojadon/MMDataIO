@@ -17,6 +17,7 @@ namespace MMDataIO.Pmx
         public PmxMorphData[] MorphArray { get; set; } = { };
         public PmxSlotData[] SlotArray { get; set; } = { };
         public PmxRigidData[] RigidArray { get; set; } = { };
+        public PmxJointData[] JointArray { get; set; } = { };
         public int[] VertexIndices { get; set; } = { };
         public string[] TextureFiles { get; set; } = { };
 
@@ -29,19 +30,13 @@ namespace MMDataIO.Pmx
             MorphArray = CloneUtil.CloneArray(MorphArray),
             SlotArray = CloneUtil.CloneArray(SlotArray),
             RigidArray = CloneUtil.CloneArray(RigidArray),
+            JointArray = CloneUtil.CloneArray(JointArray),
             VertexIndices = CloneUtil.CloneArray(VertexIndices),
             TextureFiles = CloneUtil.CloneArray(TextureFiles),
         };
 
         public void Write(BinaryWriter writer)
         {
-            Header.VertexIndexSize = CalcIndexSize(VertexArray.Length);
-            Header.TextureIndexSize = CalcIndexSize(TextureFiles.Length);
-            Header.MaterialIndexSize = CalcIndexSize(MaterialArray.Length);
-            Header.BoneIndexSize = CalcIndexSize(BoneArray.Length);
-            Header.MorphIndexSize = CalcIndexSize(MorphArray.Length);
-            Header.RigidIndexSize = CalcIndexSize(RigidArray.Length);
-
             WritePmxData(Header, writer, Header);
             WritePmxData(VertexArray, writer, Header);
             WriteData(VertexIndices, (i, ex) => ex.WritePmxId(Header.VertexIndexSize, i), writer);
@@ -51,18 +46,8 @@ namespace MMDataIO.Pmx
             WritePmxData(MorphArray, writer, Header);
             WritePmxData(SlotArray, writer, Header);
             WritePmxData(RigidArray, writer, Header);
-            writer.Write(0);//Number of Joint
+            WritePmxData(JointArray, writer, Header);
             writer.Write(0);//Number of SoftBody
-
-            byte CalcIndexSize(int count)
-            {
-                if (count <= sbyte.MaxValue)
-                    return 1;
-                else if (count <= short.MaxValue)
-                    return 2;
-                else
-                    return 4;
-            };
         }
 
         public void Read(BinaryReader reader)
@@ -76,6 +61,7 @@ namespace MMDataIO.Pmx
             MorphArray = ReadPmxData<PmxMorphData>(reader, Header);
             SlotArray = ReadPmxData<PmxSlotData>(reader, Header);
             RigidArray = ReadPmxData<PmxRigidData>(reader, Header);
+            JointArray = ReadPmxData<PmxJointData>(reader, Header);
         }
 
         public void ReadPmd(BinaryReader reader)
@@ -168,7 +154,7 @@ namespace MMDataIO.Pmx
                     break;
 
                 case 2:
-                    writer.Write((short)id);
+                    writer.Write((ushort)id);
                     break;
 
                 case 4:
@@ -230,7 +216,7 @@ namespace MMDataIO.Pmx
                     break;
 
                 case 2:
-                    id = reader.ReadInt16();
+                    id = reader.ReadUInt16();
                     break;
 
                 case 4:
